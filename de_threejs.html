@@ -22,12 +22,37 @@
         <div class="health-bar">
             <div class="health-fill" id="healthFill" style="width: 100%"></div>
         </div>
+        <div class="stat-item">Niveau: <span id="levelDisplay">1</span> - XP: <span id="xpDisplay">0/10</span></div>
+        <div class="xp-bar">
+            <div class="xp-fill" id="xpFill" style="width: 0%"></div>
+        </div>
         <div class="timer-info">Prochain tir: <span id="timerDisplay">3.0</span>s</div>
     </div>
     
     <!-- Boutons tactiles pour mobile -->
     <div class="touch-controls" id="touchControls">
         <button class="touch-button" id="pauseBtn" title="Pause">⏸️</button>
+    </div>
+
+    <!-- Interface de choix d'améliorations -->
+    <div class="upgrade-modal" id="upgradeModal" style="display: none;">
+        <div class="upgrade-content">
+            <h3>Niveau supérieur ! Choisissez une amélioration :</h3>
+            <div class="upgrade-options">
+                <button class="upgrade-btn" id="upgrade1" data-type="1">
+                    <strong>Amélioration Focus</strong><br>
+                    +3 sur 1 face aléatoire
+                </button>
+                <button class="upgrade-btn" id="upgrade2" data-type="2">
+                    <strong>Amélioration Équilibrée</strong><br>
+                    +2 sur 2 faces aléatoires
+                </button>
+                <button class="upgrade-btn" id="upgrade3" data-type="3">
+                    <strong>Amélioration Large</strong><br>
+                    +1 sur 3 faces aléatoires
+                </button>
+            </div>
+        </div>
     </div>
     
     <div id="info">

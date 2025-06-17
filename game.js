@@ -25,6 +25,12 @@ class Game {
         this.uiHeight = 120; // Hauteur de la zone UI
         this.gameAreaHeight = window.innerHeight - this.uiHeight;
         
+        // Système d'XP et de niveaux
+        this.level = 1;
+        this.xp = 0;
+        this.xpToNextLevel = 10;
+        this.isLevelingUp = false;
+        
         this.init();
     }
 
@@ -97,6 +103,8 @@ class Game {
         this.enemies.forEach((enemy, index) => {
             enemy.update(deltaTime);
             if (enemy.hp <= 0) {
+                // Gagner de l'XP égale aux HP max de l'ennemi
+                this.gainXP(enemy.maxHp);
                 this.enemies.splice(index, 1);
             }
             
@@ -147,9 +155,12 @@ class Game {
 
     // Lancer le dé et tirer des projectiles
     rollDiceAndShoot() {
-        // Déterminer d'abord la valeur du prochain lancer
-        const diceValue = Math.random() < 0.5 ? 1 : 2;
-        console.log(`MAIN: Valeur déterminée pour ce lancer: ${diceValue}`);
+        // Choisir une face aléatoire du dé
+        const faceKeys = ['face1', 'face2', 'face3', 'face4', 'face5', 'face6'];
+        const randomFaceKey = faceKeys[Math.floor(Math.random() * faceKeys.length)];
+        const diceValue = this.dice.faceValues[randomFaceKey];
+        
+        console.log(`MAIN: Face choisie: ${randomFaceKey}, valeur: ${diceValue}`);
         
         // Stocker cette valeur
         this.setDiceValue(diceValue);
@@ -195,26 +206,29 @@ class Game {
 
         let projectilesFired = 0;
         
-        console.log(`SHOOT: Début de la boucle for (i=0; i<${count}; i++)`);
+        console.log(`SHOOT: Début de la boucle for avec délais (i=0; i<${count}; i++)`);
         for (let i = 0; i < count; i++) {
             console.log(`SHOOT: Itération ${i + 1}/${count}`);
             
-            // Toujours viser l'ennemi le plus proche
-            const target = this.findNearestEnemy();
-            
-            if (target) {
-                // Ajouter un léger décalage pour éviter la superposition parfaite
-                const offsetX = (Math.random() - 0.5) * 20;
-                const offsetY = (Math.random() - 0.5) * 20;
-                const projectile = new Projectile(centerX + offsetX, centerY + offsetY, target);
-                this.projectiles.push(projectile);
-                projectilesFired++;
-                console.log(`SHOOT: Projectile ${projectilesFired} créé et ajouté - vise l'ennemi le plus proche`);
-            } else {
-                console.log(`SHOOT: Pas d'ennemi disponible pour le projectile ${i + 1}`);
-            }
+            // Ajouter un délai progressif entre chaque projectile
+            setTimeout(() => {
+                // Toujours viser l'ennemi le plus proche au moment du tir
+                const target = this.findNearestEnemy();
+                
+                if (target) {
+                    // Ajouter un léger décalage pour éviter la superposition parfaite
+                    const offsetX = (Math.random() - 0.5) * 20;
+                    const offsetY = (Math.random() - 0.5) * 20;
+                    const projectile = new Projectile(centerX + offsetX, centerY + offsetY, target);
+                    this.projectiles.push(projectile);
+                    projectilesFired++;
+                    console.log(`SHOOT: Projectile ${projectilesFired} créé et ajouté après ${i * 100}ms - vise l'ennemi le plus proche`);
+                } else {
+                    console.log(`SHOOT: Pas d'ennemi disponible pour le projectile ${i + 1} après ${i * 100}ms`);
+                }
+            }, i * 100); // 100ms de délai entre chaque projectile
         }
-        console.log(`SHOOT: FIN - ${projectilesFired} projectiles effectivement tirés sur ${count} demandés`);
+        console.log(`SHOOT: FIN - ${count} projectiles programmés avec délais`);
     }
 
     // Trouver l'ennemi le plus proche
@@ -364,6 +378,9 @@ class Game {
         const diceHPDisplay = document.getElementById('diceHPDisplay');
         const healthFill = document.getElementById('healthFill');
         const timerDisplay = document.getElementById('timerDisplay');
+        const levelDisplay = document.getElementById('levelDisplay');
+        const xpDisplay = document.getElementById('xpDisplay');
+        const xpFill = document.getElementById('xpFill');
 
         if (waveDisplay) waveDisplay.textContent = this.waveNumber;
         if (enemyDisplay) enemyDisplay.textContent = this.enemies.length;
@@ -375,6 +392,12 @@ class Game {
         if (timerDisplay) {
             const timeLeft = ((this.diceInterval - this.diceTimer) / 1000).toFixed(1);
             timerDisplay.textContent = timeLeft;
+        }
+        if (levelDisplay) levelDisplay.textContent = this.level;
+        if (xpDisplay) xpDisplay.textContent = `${this.xp}/${this.xpToNextLevel}`;
+        if (xpFill) {
+            const xpPercent = (this.xp / this.xpToNextLevel) * 100;
+            xpFill.style.width = `${xpPercent}%`;
         }
     }
 
@@ -390,6 +413,89 @@ class Game {
             pauseBtn.textContent = '⏸️';
             pauseBtn.title = 'Pause';
         }
+    }
+
+    // Système d'XP et de niveaux
+    gainXP(amount) {
+        if (this.isLevelingUp) return; // Ne pas gagner d'XP pendant le level up
+        
+        this.xp += amount;
+        console.log(`XP gagné: ${amount}, Total: ${this.xp}/${this.xpToNextLevel}`);
+        
+        // Vérifier si on peut level up
+        if (this.xp >= this.xpToNextLevel) {
+            this.levelUp();
+        }
+    }
+    
+    levelUp() {
+        this.level++;
+        this.xp -= this.xpToNextLevel;
+        this.xpToNextLevel = Math.floor(this.xpToNextLevel * 1.5); // Augmentation exponentielle
+        this.isLevelingUp = true;
+        
+        console.log(`Level Up! Niveau ${this.level}`);
+        
+        // Mettre le jeu en pause et afficher les améliorations
+        this.isPaused = true;
+        this.showUpgradeModal();
+    }
+    
+    showUpgradeModal() {
+        const modal = document.getElementById('upgradeModal');
+        modal.style.display = 'flex';
+        
+        // Ajouter les écouteurs d'événements pour les boutons
+        const upgrade1 = document.getElementById('upgrade1');
+        const upgrade2 = document.getElementById('upgrade2');
+        const upgrade3 = document.getElementById('upgrade3');
+        
+        const handleUpgrade = (type) => {
+            this.applyUpgrade(type);
+            this.hideUpgradeModal();
+        };
+        
+        upgrade1.onclick = () => handleUpgrade(1);
+        upgrade2.onclick = () => handleUpgrade(2);
+        upgrade3.onclick = () => handleUpgrade(3);
+    }
+    
+    hideUpgradeModal() {
+        const modal = document.getElementById('upgradeModal');
+        modal.style.display = 'none';
+        this.isLevelingUp = false;
+        this.isPaused = false; // Reprendre le jeu
+    }
+    
+    applyUpgrade(type) {
+        const faceKeys = ['face1', 'face2', 'face3', 'face4', 'face5', 'face6'];
+        
+        switch(type) {
+            case 1: // +3 sur 1 face
+                const randomFace1 = faceKeys[Math.floor(Math.random() * faceKeys.length)];
+                this.dice.faceValues[randomFace1] += 3;
+                console.log(`Amélioration: +3 sur ${randomFace1}, nouvelle valeur: ${this.dice.faceValues[randomFace1]}`);
+                break;
+                
+            case 2: // +2 sur 2 faces
+                for (let i = 0; i < 2; i++) {
+                    const randomFace2 = faceKeys[Math.floor(Math.random() * faceKeys.length)];
+                    this.dice.faceValues[randomFace2] += 2;
+                    console.log(`Amélioration: +2 sur ${randomFace2}, nouvelle valeur: ${this.dice.faceValues[randomFace2]}`);
+                }
+                break;
+                
+            case 3: // +1 sur 3 faces
+                for (let i = 0; i < 3; i++) {
+                    const randomFace3 = faceKeys[Math.floor(Math.random() * faceKeys.length)];
+                    this.dice.faceValues[randomFace3] += 1;
+                    console.log(`Amélioration: +1 sur ${randomFace3}, nouvelle valeur: ${this.dice.faceValues[randomFace3]}`);
+                }
+                break;
+        }
+        
+        // Mettre à jour le dé avec les nouvelles valeurs
+        this.dice.updateFaceValues(this.dice.faceValues);
     }
 
     // Redimensionnement

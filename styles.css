@@ -88,6 +88,21 @@ body {
     transition: width 0.3s ease;
 }
 
+.xp-bar {
+    width: 100%;
+    height: 10px;
+    background: #333;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 2px 0;
+}
+
+.xp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #FFD700, #FFA500);
+    transition: width 0.3s ease;
+}
+
 .timer-info {
     text-align: center;
     font-size: 10px;
@@ -194,5 +209,72 @@ body {
     
     .timer-info {
         font-size: 8px;
+    }
+}
+
+/* Interface d'améliorations */
+.upgrade-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.upgrade-content {
+    background: rgba(30, 30, 50, 0.95);
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 90%;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.upgrade-content h3 {
+    color: #FFD700;
+    margin: 0 0 20px 0;
+    font-size: 18px;
+}
+
+.upgrade-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.upgrade-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    touch-action: manipulation;
+}
+
+.upgrade-btn:hover, .upgrade-btn:active {
+    background: linear-gradient(135deg, #7a8cff 0%, #8a5cb8 100%);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.02);
+}
+
+/* Desktop - boutons côte à côte */
+@media (min-width: 768px) {
+    .upgrade-options {
+        flex-direction: row;
+        gap: 15px;
+    }
+    
+    .upgrade-btn {
+        flex: 1;
+        min-height: 80px;
     }
 } 

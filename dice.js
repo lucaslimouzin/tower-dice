@@ -1,13 +1,13 @@
 // Classe pour gérer le dé Three.js
 class Dice {
     constructor() {
-        // Variables pour chaque face du dé
+        // Variables pour chaque face du dé (3 faces à 1, 3 faces à 2)
         this.faceValues = {
             face1: 1,
-            face2: 2,
+            face2: 1,
             face3: 1,
             face4: 2,
-            face5: 1,
+            face5: 2,
             face6: 2
         };
 
