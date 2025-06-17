@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Dé Tower Defense Mobile</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="container"></div>
+    
+    <!-- Interface de jeu mobile -->
+    <div class="game-ui" id="gameUI">
+        <div class="game-stats">
+            <div class="stat-item">Vague: <span id="waveDisplay">1</span></div>
+            <div class="stat-item">Ennemis: <span id="enemyDisplay">0</span></div>
+        </div>
+        <div class="stat-item">HP Dé: <span id="diceHPDisplay">100/100</span></div>
+        <div class="health-bar">
+            <div class="health-fill" id="healthFill" style="width: 100%"></div>
+        </div>
+        <div class="timer-info">Prochain tir: <span id="timerDisplay">3.0</span>s</div>
+    </div>
+    
+    <!-- Boutons tactiles pour mobile -->
+    <div class="touch-controls" id="touchControls">
+        <button class="touch-button" id="pauseBtn" title="Pause">⏸️</button>
+    </div>
+    
+    <div id="info">
+        <p>🎮 Tower Defense avec Dé</p>
+        <p>Le dé se lance automatiquement toutes les 3s</p>
+        <p>Chaque projectile fait 2 dégâts</p>
+    </div>
+
+    <!-- Three.js CDN - Dernière version -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+    
+    <!-- Fichiers JavaScript de l'application -->
+    <script src="dice.js"></script>
+    <script src="controls.js"></script>
+    <script src="game.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
